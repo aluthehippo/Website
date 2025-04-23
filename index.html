@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycle Right - Community Initiative</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .feedback-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white p-4 sticky top-0 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Recycle Right</h1>
+            <ul class="flex space-x-6">
+                <li><a href="#home" class="hover:underline">Home</a></li>
+                <li><a href="#about" class="hover:underline">About</a></li>
+                <li><a href="#data" class="hover:underline">Data</a></li>
+                <li><a href="#feedback" class="hover:underline">Feedback</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="bg-green-100 py-20 text-center">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold mb-4">Join Our Recycling Initiative!</h2>
+            <p class="text-lg mb-6">Help reduce waste in our community by learning how to recycle right.</p>
+            <button onclick="startQuiz()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">Take the Recycling Quiz</button>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Why Recycling Matters</h2>
+            <p class="text-lg mb-4">Our community generates over 500 tons of waste annually, but only 30% is recycled. Improper recycling leads to contamination, reducing the effectiveness of recycling programs. This initiative aims to educate and engage our community to improve recycling rates and reduce landfill waste.</p>
+            <p class="text-lg">Through interactive tools and data-driven insights, we empower residents to make informed choices about recycling.</p>
+        </div>
+    </section>
+
+    <!-- Data Section -->
+    <section id="data" class="bg-gray-200 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Recycling by the Numbers</h2>
+            <div class="flex justify-center">
+                <canvas id="recyclingChart" class="max-w-2xl"></canvas>
+            </div>
+            <p class="text-center mt-4 text-lg">Source: Local Waste Management Report, 2024</p>
+        </div>
+    </section>
+
+    <!-- Feedback Section -->
+    <section id="feedback" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">Share Your Feedback</h2>
+            <div class="feedback-form bg-white p-6 rounded-lg shadow-md">
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" class="mt-1 p-2 w-full border rounded-md" placeholder="Your Name">
+                </div>
+                <div class="mb-4">
+                    <label for="feedback" class="block text-sm font-medium text-gray-700">Feedback</label>
+                    <textarea id="feedback" class="mt-1 p-2 w-full border rounded-md" rows="4" placeholder="Your thoughts..."></textarea>
+                </div>
+                <button onclick="submitFeedback()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Submit</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-green-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Recycle Right Initiative. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Interactive Quiz
+        function startQuiz() {
+            const questions = [
+                {
+                    question: "Which bin should plastic bottles go in?",
+                    options: ["Recycling", "General Waste", "Organic"],
+                    answer: "Recycling"
+                },
+                {
+                    question: "Can greasy pizza boxes be recycled?",
+                    options: ["Yes", "No"],
+                    answer: "No"
+                }
+            ];
+            let score = 0;
+            let current = 0;
+
+            function showQuestion() {
+                if (current < questions.length) {
+                    const q = questions[current];
+                    let optionsHtml = q.options.map(opt => `<button onclick="checkAnswer('${opt}')" class="bg-green-500 text-white px-4 py-2 m-2 rounded">${opt}</button>`).join('');
+                    let quizHtml = `
+                        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div class="bg-white p-6 rounded-lg max-w-md">
+                                <h3 class="text-lg font-bold mb-4">${q.question}</h3>
+                                <div>${optionsHtml}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', quizHtml);
+                } else {
+                    alert(`Quiz finished! Your score: ${score}/${questions.length}`);
+                }
+            }
+
+            window.checkAnswer = function (choice) {
+                if (choice === questions[current].answer) score++;
+                document.querySelector('.fixed').remove();
+                current++;
+                showQuestion();
+            };
+
+            showQuestion();
+        }
+
+        // Chart.js Data Visualization
+        const ctx = document.getElementById('recyclingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Plastic', 'Paper', 'Glass', 'Organic', 'Non-Recyclable'],
+                datasets: [{
+                    label: 'Waste Distribution (Tons)',
+                    data: [150, 100, 50, 120, 80],
+                    backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#8BC34A', '#F44336'],
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tons'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Feedback Submission
+        function submitFeedback() {
+            const name = document.getElementById('name').value;
+            const feedback = document.getElementById('feedback').value;
+            if (name && feedback) {
+                alert('Thank you for your feedback!');
+                document.getElementById('name').value = '';
+                document.getElementById('feedback').value = '';
+            } else {
+                alert('Please fill out all fields.');
+            }
+        }
+    </script>
+</body>
+</html>
